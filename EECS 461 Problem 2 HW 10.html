@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Exponential Distribution Histograms</title>
+  <!-- Load Plotly.js -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+
+<div id="empiricalHistogram"></div>
+<div id="theoreticalHistogram"></div>
+
+<script>
+  // Set the number of samples
+  var numSamples = 10000;
+
+  // Generate uniform random variables
+  var uniformSamples = new Array(numSamples);
+  for (var i = 0; i < numSamples; i++) {
+    uniformSamples[i] = Math.random();
+  }
+
+  // Apply transformation to convert uniform samples to exponential distribution with mean 2
+  var exponentialSamples = new Array(numSamples);
+  for (var i = 0; i < numSamples; i++) {
+    exponentialSamples[i] = -2 * Math.log(1 - uniformSamples[i]);
+  }
+
+  // Define histogram parameters
+  var binWidth = 0.1;
+  var edges = [];
+  for (var i = 0; i <= 100; i++) {
+    edges.push(i * binWidth / 10);
+  }
+
+  // Create a histogram of the transformed exponential samples 
+  var exponentialHistogramData = {
+    x: exponentialSamples,
+    type: 'histogram',
+    xbins: { start: 0, end: 10, size: binWidth },
+    autobinx: false,
+    marker: { color: 'light blue' }
+  };
+
+  var exponentialLayout = {
+    title: 'Exponential Distribution with Mean = 2',
+    xaxis: { title: 'Value' },
+    yaxis: { title: 'Relative Frequency' }
+  };
+
+  Plotly.newPlot('empiricalHistogram', [exponentialHistogramData], exponentialLayout);
+
+  // Calculate theoretical probabilities for each bin (mean=2 exponential distribution)
+  var theoreticalProbabilities = [];
+  for (var i = 0; i <= 100; i++) {
+    theoreticalProbabilities.push((Math.exp(-edges[i] / 2) - Math.exp(-(edges[i] + binWidth) / 2)) / 2);
+  }
+
+  // Create a histogram displaying Theoretical Probabilities for mean=2 exponential random variable
+  var theoreticalHistogramData = {
+    x: edges,
+    y: theoreticalProbabilities,
+    type: 'bar',
+    marker: { color: 'red' }
+  };
+
+  var theoreticalLayout = {
+    title: 'Theoretical Probability for Mean=2 Exponential Random Variable',
+    xaxis: { title: 'Value' },
+    yaxis: { title: 'Probability' }
+  };
+
+  Plotly.newPlot('theoreticalHistogram', [theoreticalHistogramData], theoreticalLayout);
+</script>
+
+</body>
+</html>
